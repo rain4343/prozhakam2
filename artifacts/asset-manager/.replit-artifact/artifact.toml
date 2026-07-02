@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Asset Manager"
+version = "1.0.0"
+id = "artifacts/asset-manager"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22057
+
+[services.development]
+run = "pnpm --filter @workspace/asset-manager run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/asset-manager", "run", "build" ]
+publicDir = "artifacts/asset-manager/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22057"
+BASE_PATH = "/"
