@@ -182,7 +182,7 @@ export default function DepartmentsList() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>وەسف</FormLabel>
+                    <FormLabel>وەسف (ئارەزوومەندانە)</FormLabel>
                     <FormControl>
                       <Textarea placeholder="کار و ئەرکی هۆبەکە..." {...field} value={field.value || ''} />
                     </FormControl>
