@@ -18,6 +18,16 @@ import { Plus, Search, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
+const statusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    'available': 'بەردەستە',
+    'in-use': 'لە بەکارهێنان',
+    'maintenance': 'چاکسازی',
+    'retired': 'وەستاو',
+  };
+  return labels[status] ?? status;
+};
+
 export default function AssetsList() {
   const [search, setSearch] = useState("");
   const [departmentId, setDepartmentId] = useState<string>("all");
@@ -43,12 +53,12 @@ export default function AssetsList() {
     if (assetToDelete === null) return;
     deleteAsset.mutate({ id: assetToDelete }, {
       onSuccess: () => {
-        toast({ title: "Asset deleted successfully" });
+        toast({ title: "کەرەستەکە سڕایەوە" });
         queryClient.invalidateQueries({ queryKey: getListAssetsQueryKey({}) });
         setAssetToDelete(null);
       },
       onError: () => {
-        toast({ title: "Failed to delete asset", variant: "destructive" });
+        toast({ title: "شکستی هێنا لە سڕینەوەی کەرەستەکە", variant: "destructive" });
         setAssetToDelete(null);
       }
     });
@@ -63,34 +73,34 @@ export default function AssetsList() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Assets</h1>
-          <p className="text-muted-foreground mt-1">Manage physical and IT assets</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">کەرەستەکان</h1>
+          <p className="text-muted-foreground mt-1">بەڕێوەبردنی کەرەستەی ماددی و تەکنەلۆجی</p>
         </div>
         <Button asChild>
           <Link href="/assets/new">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Asset
+            <Plus className="w-4 h-4 ml-2" />
+            زیادکردنی کەرەستە
           </Link>
         </Button>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input 
-            placeholder="Search by name or tag..." 
+            placeholder="گەڕان بە ناو یان تاگ..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="pr-9"
           />
         </div>
         <div className="w-full sm:w-[200px]">
           <Select value={departmentId} onValueChange={setDepartmentId}>
             <SelectTrigger>
-              <SelectValue placeholder="All Departments" />
+              <SelectValue placeholder="هەموو بەشەکان" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Departments</SelectItem>
+              <SelectItem value="all">هەموو بەشەکان</SelectItem>
               {departments.map(dept => (
                 <SelectItem key={dept.id} value={dept.id.toString()}>{dept.name}</SelectItem>
               ))}
@@ -100,14 +110,14 @@ export default function AssetsList() {
         <div className="w-full sm:w-[200px]">
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger>
-              <SelectValue placeholder="All Statuses" />
+              <SelectValue placeholder="هەموو دۆخەکان" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="available">Available</SelectItem>
-              <SelectItem value="in-use">In Use</SelectItem>
-              <SelectItem value="maintenance">Maintenance</SelectItem>
-              <SelectItem value="retired">Retired</SelectItem>
+              <SelectItem value="all">هەموو دۆخەکان</SelectItem>
+              <SelectItem value="available">بەردەستە</SelectItem>
+              <SelectItem value="in-use">لە بەکارهێنان</SelectItem>
+              <SelectItem value="maintenance">چاکسازی</SelectItem>
+              <SelectItem value="retired">وەستاو</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -117,11 +127,11 @@ export default function AssetsList() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Tag</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Department</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>تاگ</TableHead>
+              <TableHead>ناو</TableHead>
+              <TableHead>بەش</TableHead>
+              <TableHead>دۆخ</TableHead>
+              <TableHead className="text-left">کارەکان</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -132,13 +142,13 @@ export default function AssetsList() {
                   <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                   <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
-                  <TableCell><Skeleton className="h-8 w-16 ml-auto" /></TableCell>
+                  <TableCell><Skeleton className="h-8 w-16" /></TableCell>
                 </TableRow>
               ))
             ) : filteredAssets.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                  No assets found.
+                  هیچ کەرەستەیەک نەدۆزرایەوە.
                 </TableCell>
               </TableRow>
             ) : (
@@ -146,26 +156,28 @@ export default function AssetsList() {
                 <TableRow key={asset.id}>
                   <TableCell className="font-mono text-sm">{asset.assetTag}</TableCell>
                   <TableCell className="font-medium">{asset.name}</TableCell>
-                  <TableCell>{asset.department?.name || 'Unassigned'}</TableCell>
+                  <TableCell>{asset.department?.name || 'دانەنراو'}</TableCell>
                   <TableCell>
-                    <div className={`inline-flex px-2 py-1 text-xs rounded-full capitalize ${
+                    <div className={`inline-flex px-2 py-1 text-xs rounded-full ${
                       asset.status === 'available' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
                       asset.status === 'in-use' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
                       asset.status === 'maintenance' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400' :
                       'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
                     }`}>
-                      {asset.status.replace('-', ' ')}
+                      {statusLabel(asset.status)}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button variant="ghost" size="icon" asChild>
-                      <Link href={`/assets/${asset.id}`}>
-                        <Edit className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setAssetToDelete(asset.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <TableCell className="text-left">
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="icon" asChild>
+                        <Link href={`/assets/${asset.id}`}>
+                          <Edit className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setAssetToDelete(asset.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -177,15 +189,15 @@ export default function AssetsList() {
       <AlertDialog open={assetToDelete !== null} onOpenChange={(open) => !open && setAssetToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Asset</AlertDialogTitle>
+            <AlertDialogTitle>سڕینەوەی کەرەستە</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this asset? This action cannot be undone.
+              ئایا دڵنیایت لە سڕینەوەی ئەم کەرەستەیە؟ ئەم کارە ناتوانرێت پاشگەزبرێتەوە.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-row-reverse gap-2">
+            <AlertDialogCancel>پاشگەزبوونەوە</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
+              سڕینەوە
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

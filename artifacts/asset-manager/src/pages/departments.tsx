@@ -24,7 +24,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Textarea } from "@/components/ui/textarea";
 
 const departmentSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "ناو پێویستە"),
   description: z.string().optional().nullable(),
 });
 
@@ -64,20 +64,20 @@ export default function DepartmentsList() {
     if (editingDept) {
       updateDept.mutate({ id: editingDept.id, data }, {
         onSuccess: () => {
-          toast({ title: "Department updated successfully" });
+          toast({ title: "بەشەکە نوێکرایەوە" });
           queryClient.invalidateQueries({ queryKey: getListDepartmentsQueryKey() });
           setIsDialogOpen(false);
         },
-        onError: () => toast({ title: "Failed to update department", variant: "destructive" })
+        onError: () => toast({ title: "شکستی هێنا لە نوێکردنەوەی بەشەکە", variant: "destructive" })
       });
     } else {
       createDept.mutate({ data }, {
         onSuccess: () => {
-          toast({ title: "Department created successfully" });
+          toast({ title: "بەشەکە زیادکرا" });
           queryClient.invalidateQueries({ queryKey: getListDepartmentsQueryKey() });
           setIsDialogOpen(false);
         },
-        onError: () => toast({ title: "Failed to create department", variant: "destructive" })
+        onError: () => toast({ title: "شکستی هێنا لە زیادکردنی بەشەکە", variant: "destructive" })
       });
     }
   };
@@ -86,12 +86,12 @@ export default function DepartmentsList() {
     if (deptToDelete === null) return;
     deleteDept.mutate({ id: deptToDelete }, {
       onSuccess: () => {
-        toast({ title: "Department deleted successfully" });
+        toast({ title: "بەشەکە سڕایەوە" });
         queryClient.invalidateQueries({ queryKey: getListDepartmentsQueryKey() });
         setDeptToDelete(null);
       },
       onError: () => {
-        toast({ title: "Failed to delete department", variant: "destructive" });
+        toast({ title: "شکستی هێنا لە سڕینەوەی بەشەکە", variant: "destructive" });
         setDeptToDelete(null);
       }
     });
@@ -101,12 +101,12 @@ export default function DepartmentsList() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Departments</h1>
-          <p className="text-muted-foreground mt-1">Manage organizational units</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">بەشەکان</h1>
+          <p className="text-muted-foreground mt-1">بەڕێوەبردنی یەکەکانی ڕێکخراوە</p>
         </div>
         <Button onClick={openNewDialog}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Department
+          <Plus className="w-4 h-4 ml-2" />
+          زیادکردنی بەش
         </Button>
       </div>
 
@@ -114,9 +114,9 @@ export default function DepartmentsList() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>ناو</TableHead>
+              <TableHead>شرۆڤە</TableHead>
+              <TableHead className="text-left">کارەکان</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -125,13 +125,13 @@ export default function DepartmentsList() {
                 <TableRow key={i}>
                   <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-64" /></TableCell>
-                  <TableCell><Skeleton className="h-8 w-16 ml-auto" /></TableCell>
+                  <TableCell><Skeleton className="h-8 w-16" /></TableCell>
                 </TableRow>
               ))
             ) : departments.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
-                  No departments found.
+                  هیچ بەشێک نەدۆزرایەوە.
                 </TableCell>
               </TableRow>
             ) : (
@@ -139,13 +139,15 @@ export default function DepartmentsList() {
                 <TableRow key={dept.id}>
                   <TableCell className="font-medium">{dept.name}</TableCell>
                   <TableCell className="text-muted-foreground">{dept.description || '-'}</TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button variant="ghost" size="icon" onClick={() => openEditDialog(dept)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeptToDelete(dept.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <TableCell className="text-left">
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="icon" onClick={() => openEditDialog(dept)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeptToDelete(dept.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -157,7 +159,7 @@ export default function DepartmentsList() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingDept ? "Edit Department" : "Add Department"}</DialogTitle>
+            <DialogTitle>{editingDept ? "دەستکاریکردنی بەش" : "زیادکردنی بەش"}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -166,9 +168,9 @@ export default function DepartmentsList() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>ناو</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Information Technology" {...field} />
+                      <Input placeholder="ب.ن. تەکنەلۆجیای زانیاری" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -179,18 +181,18 @@ export default function DepartmentsList() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>شرۆڤە</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Department function..." {...field} value={field.value || ''} />
+                      <Textarea placeholder="کار و ئەرکی بەشەکە..." {...field} value={field.value || ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+              <DialogFooter className="flex-row-reverse gap-2">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>پاشگەزبوونەوە</Button>
                 <Button type="submit" disabled={createDept.isPending || updateDept.isPending}>
-                  {createDept.isPending || updateDept.isPending ? "Saving..." : "Save"}
+                  {createDept.isPending || updateDept.isPending ? "پاشەکەوتکردن..." : "پاشەکەوتکردن"}
                 </Button>
               </DialogFooter>
             </form>
@@ -201,15 +203,15 @@ export default function DepartmentsList() {
       <AlertDialog open={deptToDelete !== null} onOpenChange={(open) => !open && setDeptToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Department</AlertDialogTitle>
+            <AlertDialogTitle>سڕینەوەی بەش</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this department? This action cannot be undone.
+              ئایا دڵنیایت لە سڕینەوەی ئەم بەشە؟ ئەم کارە ناتوانرێت پاشگەزبرێتەوە.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-row-reverse gap-2">
+            <AlertDialogCancel>پاشگەزبوونەوە</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
+              سڕینەوە
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

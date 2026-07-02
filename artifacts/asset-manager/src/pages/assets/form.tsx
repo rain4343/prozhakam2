@@ -19,13 +19,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 const assetSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  assetTag: z.string().min(1, "Asset Tag is required"),
+  name: z.string().min(1, "ناو پێویستە"),
+  assetTag: z.string().min(1, "تاگی کەرەستە پێویستە"),
   description: z.string().optional(),
-  departmentId: z.coerce.number().min(1, "Department is required"),
+  departmentId: z.coerce.number().min(1, "بەش پێویستە"),
   status: z.enum(["available", "in-use", "maintenance", "retired"]),
 });
 
@@ -79,22 +79,22 @@ export default function AssetForm() {
     if (isNew) {
       createAsset.mutate({ data }, {
         onSuccess: () => {
-          toast({ title: "Asset created successfully" });
+          toast({ title: "کەرەستەکە زیادکرا" });
           setLocation("/assets");
         },
         onError: () => {
-          toast({ title: "Failed to create asset", variant: "destructive" });
+          toast({ title: "شکستی هێنا لە زیادکردنی کەرەستەکە", variant: "destructive" });
         }
       });
     } else {
       updateAsset.mutate({ id: assetId, data }, {
         onSuccess: () => {
-          toast({ title: "Asset updated successfully" });
+          toast({ title: "کەرەستەکە نوێکرایەوە" });
           queryClient.invalidateQueries({ queryKey: getGetAssetQueryKey(assetId) });
           setLocation("/assets");
         },
         onError: () => {
-          toast({ title: "Failed to update asset", variant: "destructive" });
+          toast({ title: "شکستی هێنا لە نوێکردنەوەی کەرەستەکە", variant: "destructive" });
         }
       });
     }
@@ -122,14 +122,14 @@ export default function AssetForm() {
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
-      <Button variant="ghost" onClick={() => setLocation("/assets")} className="-ml-4">
-        <ChevronLeft className="w-4 h-4 mr-2" />
-        Back to Assets
+      <Button variant="ghost" onClick={() => setLocation("/assets")} className="-mr-4">
+        <ChevronRight className="w-4 h-4 ml-2" />
+        گەڕانەوە بۆ کەرەستەکان
       </Button>
 
       <Card>
         <CardHeader>
-          <CardTitle>{isNew ? "Add New Asset" : "Edit Asset"}</CardTitle>
+          <CardTitle>{isNew ? "زیادکردنی کەرەستەی نوێ" : "دەستکاریکردنی کەرەستە"}</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -140,9 +140,9 @@ export default function AssetForm() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Asset Name</FormLabel>
+                      <FormLabel>ناوی کەرەستە</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. MacBook Pro 16" {...field} />
+                        <Input placeholder="ب.ن. MacBook Pro 16" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -153,9 +153,9 @@ export default function AssetForm() {
                   name="assetTag"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Asset Tag</FormLabel>
+                      <FormLabel>تاگی کەرەستە</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. AST-001" {...field} />
+                        <Input placeholder="ب.ن. IT-001" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -168,9 +168,9 @@ export default function AssetForm() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>شرۆڤە</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Additional details..." {...field} />
+                      <Textarea placeholder="زانیاری زیاتر..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -183,14 +183,14 @@ export default function AssetForm() {
                   name="departmentId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Department</FormLabel>
+                      <FormLabel>بەش</FormLabel>
                       <Select 
                         value={field.value ? field.value.toString() : ""} 
                         onValueChange={(val) => field.onChange(parseInt(val))}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select department" />
+                            <SelectValue placeholder="بژاردنی بەش" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -211,18 +211,18 @@ export default function AssetForm() {
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Status</FormLabel>
+                      <FormLabel>دۆخ</FormLabel>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
+                            <SelectValue placeholder="بژاردنی دۆخ" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="available">Available</SelectItem>
-                          <SelectItem value="in-use">In Use</SelectItem>
-                          <SelectItem value="maintenance">Maintenance</SelectItem>
-                          <SelectItem value="retired">Retired</SelectItem>
+                          <SelectItem value="available">بەردەستە</SelectItem>
+                          <SelectItem value="in-use">لە بەکارهێنان</SelectItem>
+                          <SelectItem value="maintenance">چاکسازی</SelectItem>
+                          <SelectItem value="retired">وەستاو</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -231,12 +231,12 @@ export default function AssetForm() {
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" type="button" onClick={() => setLocation("/assets")}>
-                  Cancel
-                </Button>
+              <div className="flex justify-start gap-2 pt-4">
                 <Button type="submit" disabled={isSaving}>
-                  {isSaving ? "Saving..." : "Save Asset"}
+                  {isSaving ? "پاشەکەوتکردن..." : "پاشەکەوتکردنی کەرەستە"}
+                </Button>
+                <Button variant="outline" type="button" onClick={() => setLocation("/assets")}>
+                  پاشگەزبوونەوە
                 </Button>
               </div>
             </form>

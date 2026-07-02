@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'پانێڵی بەڕێوەبردن') - ئی-ڕێکار</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.rtl.min.css" integrity="sha384-gXt9imSW0VcJVHezoNQsP+TNrjYXoGcrqBZJpry9zJt8PCQjobwmhMGaDHTASo9N" crossorigin="anonymous">
+
+    {{-- Stili Taybet bo Zimanî Kurdî --}}
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: #adb5bd;
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            color: white;
+            background-color: #495057;
+        }
+        .main-content {
+            margin-right: 250px; /* Be andazey panayî sidebar */
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h4 class="text-center mb-4">ئی-ڕێکار</h4>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}" href="{{ route('admin.departments.index') }}">
+                    بەڕێوەبردنی هۆبەکان
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
+                    بەڕێوەبردنی فەرمانبەران
+                </a>
+            </li>
+            <!-- Linkî tir lere zyad dekrên -->
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="container-fluid">
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @yield('content')
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>

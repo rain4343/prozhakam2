@@ -23,7 +23,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const roleSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "ناو پێویستە"),
 });
 
 type RoleFormValues = z.infer<typeof roleSchema>;
@@ -62,20 +62,20 @@ export default function RolesList() {
     if (editingRole) {
       updateRole.mutate({ id: editingRole.id, data }, {
         onSuccess: () => {
-          toast({ title: "Role updated successfully" });
+          toast({ title: "ئەرکەکە نوێکرایەوە" });
           queryClient.invalidateQueries({ queryKey: getListRolesQueryKey() });
           setIsDialogOpen(false);
         },
-        onError: () => toast({ title: "Failed to update role", variant: "destructive" })
+        onError: () => toast({ title: "شکستی هێنا لە نوێکردنەوەی ئەرکەکە", variant: "destructive" })
       });
     } else {
       createRole.mutate({ data }, {
         onSuccess: () => {
-          toast({ title: "Role created successfully" });
+          toast({ title: "ئەرکەکە زیادکرا" });
           queryClient.invalidateQueries({ queryKey: getListRolesQueryKey() });
           setIsDialogOpen(false);
         },
-        onError: () => toast({ title: "Failed to create role", variant: "destructive" })
+        onError: () => toast({ title: "شکستی هێنا لە زیادکردنی ئەرکەکە", variant: "destructive" })
       });
     }
   };
@@ -84,12 +84,12 @@ export default function RolesList() {
     if (roleToDelete === null) return;
     deleteRole.mutate({ id: roleToDelete }, {
       onSuccess: () => {
-        toast({ title: "Role deleted successfully" });
+        toast({ title: "ئەرکەکە سڕایەوە" });
         queryClient.invalidateQueries({ queryKey: getListRolesQueryKey() });
         setRoleToDelete(null);
       },
       onError: () => {
-        toast({ title: "Failed to delete role", variant: "destructive" });
+        toast({ title: "شکستی هێنا لە سڕینەوەی ئەرکەکە", variant: "destructive" });
         setRoleToDelete(null);
       }
     });
@@ -99,12 +99,12 @@ export default function RolesList() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Roles</h1>
-          <p className="text-muted-foreground mt-1">Manage system permissions and access levels</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">ئەرکەکان</h1>
+          <p className="text-muted-foreground mt-1">بەڕێوەبردنی مۆڵەتەکانی سیستەم و ئاستەکانی دەستگەی</p>
         </div>
         <Button onClick={openNewDialog}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Role
+          <Plus className="w-4 h-4 ml-2" />
+          زیادکردنی ئەرک
         </Button>
       </div>
 
@@ -112,8 +112,8 @@ export default function RolesList() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Role Name</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>ناوی ئەرک</TableHead>
+              <TableHead className="text-left">کارەکان</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -121,26 +121,28 @@ export default function RolesList() {
               [...Array(3)].map((_, i) => (
                 <TableRow key={i}>
                   <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                  <TableCell><Skeleton className="h-8 w-16 ml-auto" /></TableCell>
+                  <TableCell><Skeleton className="h-8 w-16" /></TableCell>
                 </TableRow>
               ))
             ) : roles.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={2} className="h-24 text-center text-muted-foreground">
-                  No roles found.
+                  هیچ ئەرکێک نەدۆزرایەوە.
                 </TableCell>
               </TableRow>
             ) : (
               roles.map((role) => (
                 <TableRow key={role.id}>
                   <TableCell className="font-medium">{role.name}</TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button variant="ghost" size="icon" onClick={() => openEditDialog(role)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setRoleToDelete(role.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <TableCell className="text-left">
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="icon" onClick={() => openEditDialog(role)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setRoleToDelete(role.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -152,7 +154,7 @@ export default function RolesList() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>{editingRole ? "Edit Role" : "Add Role"}</DialogTitle>
+            <DialogTitle>{editingRole ? "دەستکاریکردنی ئەرک" : "زیادکردنی ئەرک"}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -161,18 +163,18 @@ export default function RolesList() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role Name</FormLabel>
+                    <FormLabel>ناوی ئەرک</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Admin" {...field} />
+                      <Input placeholder="ب.ن. بەڕێوەبەر" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+              <DialogFooter className="flex-row-reverse gap-2">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>پاشگەزبوونەوە</Button>
                 <Button type="submit" disabled={createRole.isPending || updateRole.isPending}>
-                  {createRole.isPending || updateRole.isPending ? "Saving..." : "Save"}
+                  {createRole.isPending || updateRole.isPending ? "پاشەکەوتکردن..." : "پاشەکەوتکردن"}
                 </Button>
               </DialogFooter>
             </form>
@@ -183,15 +185,15 @@ export default function RolesList() {
       <AlertDialog open={roleToDelete !== null} onOpenChange={(open) => !open && setRoleToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Role</AlertDialogTitle>
+            <AlertDialogTitle>سڕینەوەی ئەرک</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this role? Users assigned to this role will lose its permissions.
+              ئایا دڵنیایت لە سڕینەوەی ئەم ئەرکە؟ فەرمانبەرانی ئەم ئەرکە مۆڵەتەکانیان لەدەستدەدەن.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-row-reverse gap-2">
+            <AlertDialogCancel>پاشگەزبوونەوە</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
+              سڕینەوە
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

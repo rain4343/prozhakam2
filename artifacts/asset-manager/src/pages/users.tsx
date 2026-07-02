@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Edit, Trash2, CheckCircle, XCircle } from "lucide-react";
+import { Plus, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -28,10 +28,10 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 
 const userSchema = z.object({
-  fullName: z.string().min(1, "Full name is required"),
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(8, "Password must be at least 8 characters").optional().or(z.literal("")),
-  departmentId: z.coerce.number().min(1, "Department is required"),
+  fullName: z.string().min(1, "ناوی تەواو پێویستە"),
+  username: z.string().min(1, "ناوی بەکارهێنەر پێویستە"),
+  password: z.string().min(8, "وشەی نهێنی دەبێت لانیکەم ٨ پیت بێت").optional().or(z.literal("")),
+  departmentId: z.coerce.number().min(1, "بەش پێویستە"),
   jobTitle: z.string().optional().nullable(),
   isActive: z.boolean().default(true),
   roleIds: z.array(z.number()).default([])
@@ -71,7 +71,7 @@ export default function UsersList() {
     form.reset({ 
       fullName: user.fullName, 
       username: user.username, 
-      password: "", // never pre-fill password
+      password: "",
       departmentId: user.departmentId, 
       jobTitle: user.jobTitle || "", 
       isActive: user.isActive,
@@ -81,7 +81,6 @@ export default function UsersList() {
   };
 
   const onSubmit = (data: UserFormValues) => {
-    // If editing and password is empty, don't send it
     if (editingUser && !data.password) {
       delete data.password;
     }
@@ -89,25 +88,24 @@ export default function UsersList() {
     if (editingUser) {
       updateUser.mutate({ id: editingUser.id, data }, {
         onSuccess: () => {
-          toast({ title: "User updated successfully" });
+          toast({ title: "فەرمانبەرەکە نوێکرایەوە" });
           queryClient.invalidateQueries({ queryKey: getListUsersQueryKey({}) });
           setIsDialogOpen(false);
         },
-        onError: () => toast({ title: "Failed to update user", variant: "destructive" })
+        onError: () => toast({ title: "شکستی هێنا لە نوێکردنەوەی فەرمانبەرەکە", variant: "destructive" })
       });
     } else {
-      // Create requires password
       if (!data.password) {
-        form.setError("password", { message: "Password is required for new users" });
+        form.setError("password", { message: "وشەی نهێنی پێویستە بۆ فەرمانبەرانی نوێ" });
         return;
       }
       createUser.mutate({ data: data as any }, {
         onSuccess: () => {
-          toast({ title: "User created successfully" });
+          toast({ title: "فەرمانبەرەکە زیادکرا" });
           queryClient.invalidateQueries({ queryKey: getListUsersQueryKey({}) });
           setIsDialogOpen(false);
         },
-        onError: () => toast({ title: "Failed to create user", variant: "destructive" })
+        onError: () => toast({ title: "شکستی هێنا لە زیادکردنی فەرمانبەرەکە", variant: "destructive" })
       });
     }
   };
@@ -116,12 +114,12 @@ export default function UsersList() {
     if (userToDelete === null) return;
     deleteUser.mutate({ id: userToDelete }, {
       onSuccess: () => {
-        toast({ title: "User deleted successfully" });
+        toast({ title: "فەرمانبەرەکە سڕایەوە" });
         queryClient.invalidateQueries({ queryKey: getListUsersQueryKey({}) });
         setUserToDelete(null);
       },
       onError: () => {
-        toast({ title: "Failed to delete user", variant: "destructive" });
+        toast({ title: "شکستی هێنا لە سڕینەوەی فەرمانبەرەکە", variant: "destructive" });
         setUserToDelete(null);
       }
     });
@@ -131,12 +129,12 @@ export default function UsersList() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Users</h1>
-          <p className="text-muted-foreground mt-1">Manage system access and staff roles</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">فەرمانبەران</h1>
+          <p className="text-muted-foreground mt-1">بەڕێوەبردنی دەستگەی سیستەم و ئەرکی ستافەکان</p>
         </div>
         <Button onClick={openNewDialog}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add User
+          <Plus className="w-4 h-4 ml-2" />
+          زیادکردنی فەرمانبەر
         </Button>
       </div>
 
@@ -144,11 +142,11 @@ export default function UsersList() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>Department</TableHead>
-              <TableHead>Roles</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>فەرمانبەر</TableHead>
+              <TableHead>بەش</TableHead>
+              <TableHead>ئەرکەکان</TableHead>
+              <TableHead>دۆخ</TableHead>
+              <TableHead className="text-left">کارەکان</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -159,13 +157,13 @@ export default function UsersList() {
                   <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                   <TableCell><Skeleton className="h-6 w-20" /></TableCell>
                   <TableCell><Skeleton className="h-6 w-16" /></TableCell>
-                  <TableCell><Skeleton className="h-8 w-16 ml-auto" /></TableCell>
+                  <TableCell><Skeleton className="h-8 w-16" /></TableCell>
                 </TableRow>
               ))
             ) : users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                  No users found.
+                  هیچ فەرمانبەرێک نەدۆزرایەوە.
                 </TableCell>
               </TableRow>
             ) : (
@@ -176,7 +174,7 @@ export default function UsersList() {
                     <div className="text-sm text-muted-foreground">{user.username}</div>
                   </TableCell>
                   <TableCell>
-                    <div className="font-medium">{user.department?.name || 'Unassigned'}</div>
+                    <div className="font-medium">{user.department?.name || 'دانەنراو'}</div>
                     <div className="text-sm text-muted-foreground">{user.jobTitle || '-'}</div>
                   </TableCell>
                   <TableCell>
@@ -191,18 +189,20 @@ export default function UsersList() {
                   </TableCell>
                   <TableCell>
                     {user.isActive ? (
-                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">Active</Badge>
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">چالاک</Badge>
                     ) : (
-                      <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700">Inactive</Badge>
+                      <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700">ناچالاک</Badge>
                     )}
                   </TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button variant="ghost" size="icon" onClick={() => openEditDialog(user)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setUserToDelete(user.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <TableCell className="text-left">
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="icon" onClick={() => openEditDialog(user)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setUserToDelete(user.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -214,7 +214,7 @@ export default function UsersList() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{editingUser ? "Edit User" : "Add User"}</DialogTitle>
+            <DialogTitle>{editingUser ? "دەستکاریکردنی فەرمانبەر" : "زیادکردنی فەرمانبەر"}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -224,9 +224,9 @@ export default function UsersList() {
                   name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel>ناوی تەواو</FormLabel>
                       <FormControl>
-                        <Input placeholder="Jane Doe" {...field} />
+                        <Input placeholder="ئەحمەد کەریم" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -237,9 +237,9 @@ export default function UsersList() {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>ناوی بەکارهێنەر</FormLabel>
                       <FormControl>
-                        <Input placeholder="jdoe" {...field} />
+                        <Input placeholder="ahmed.k" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -252,7 +252,7 @@ export default function UsersList() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password {editingUser && "(leave blank to keep current)"}</FormLabel>
+                    <FormLabel>وشەی نهێنی {editingUser && "(بەتاڵ بهێڵە بۆ پاراستنی وشەی نهێنی ئێستا)"}</FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="********" {...field} value={field.value || ''} />
                     </FormControl>
@@ -267,14 +267,14 @@ export default function UsersList() {
                   name="departmentId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Department</FormLabel>
+                      <FormLabel>بەش</FormLabel>
                       <Select 
                         value={field.value ? field.value.toString() : ""} 
                         onValueChange={(val) => field.onChange(parseInt(val))}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select department" />
+                            <SelectValue placeholder="بژاردنی بەش" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -294,9 +294,9 @@ export default function UsersList() {
                   name="jobTitle"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Job Title</FormLabel>
+                      <FormLabel>ناونیشانی کار</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. IT Analyst" {...field} value={field.value || ''} />
+                        <Input placeholder="ب.ن. شیکەرەوەی IT" {...field} value={field.value || ''} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -306,10 +306,10 @@ export default function UsersList() {
 
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <FormLabel className="mb-2 block">Roles</FormLabel>
+                  <FormLabel className="mb-2 block">ئەرکەکان</FormLabel>
                   <div className="space-y-2 border rounded-md p-3 max-h-32 overflow-y-auto">
                     {roles.map(role => (
-                      <label key={role.id} className="flex items-center space-x-2 text-sm">
+                      <label key={role.id} className="flex items-center gap-2 text-sm cursor-pointer">
                         <input 
                           type="checkbox"
                           className="rounded border-gray-300"
@@ -336,9 +336,9 @@ export default function UsersList() {
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between w-full">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">Account Status</FormLabel>
+                          <FormLabel className="text-base">دۆخی ئەکاونت</FormLabel>
                           <div className="text-sm text-muted-foreground">
-                            {field.value ? 'Active' : 'Disabled'}
+                            {field.value ? 'چالاک' : 'ناچالاک'}
                           </div>
                         </div>
                         <FormControl>
@@ -353,10 +353,10 @@ export default function UsersList() {
                 </div>
               </div>
 
-              <DialogFooter className="pt-4">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+              <DialogFooter className="flex-row-reverse gap-2 pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>پاشگەزبوونەوە</Button>
                 <Button type="submit" disabled={createUser.isPending || updateUser.isPending}>
-                  {createUser.isPending || updateUser.isPending ? "Saving..." : "Save User"}
+                  {createUser.isPending || updateUser.isPending ? "پاشەکەوتکردن..." : "پاشەکەوتکردنی فەرمانبەر"}
                 </Button>
               </DialogFooter>
             </form>
@@ -367,15 +367,15 @@ export default function UsersList() {
       <AlertDialog open={userToDelete !== null} onOpenChange={(open) => !open && setUserToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete User</AlertDialogTitle>
+            <AlertDialogTitle>سڕینەوەی فەرمانبەر</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this user? This action cannot be undone and they will lose access immediately.
+              ئایا دڵنیایت لە سڕینەوەی ئەم فەرمانبەرە؟ دەستگەیەکەیان یەکسەر لەدەستدەچێت.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-row-reverse gap-2">
+            <AlertDialogCancel>پاشگەزبوونەوە</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
+              سڕینەوە
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
