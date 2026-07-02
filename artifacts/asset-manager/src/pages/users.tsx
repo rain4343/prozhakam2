@@ -134,7 +134,7 @@ export default function UsersList() {
         </div>
         <Button onClick={openNewDialog}>
           <Plus className="w-4 h-4 ml-2" />
-          زیادکردنی فەرمانبەر
+          دروستکردنی فەرمانبەری نوێ
         </Button>
       </div>
 
@@ -142,7 +142,9 @@ export default function UsersList() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>فەرمانبەر</TableHead>
+              <TableHead>#</TableHead>
+              <TableHead>ناوی سیانی</TableHead>
+              <TableHead>ناوی بەکارهێنەر</TableHead>
               <TableHead>هۆبە</TableHead>
               <TableHead>ئەرکەکان</TableHead>
               <TableHead>دۆخ</TableHead>
@@ -153,7 +155,9 @@ export default function UsersList() {
             {isLoading ? (
               [...Array(5)].map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-10 w-48" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-6" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-36" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                   <TableCell><Skeleton className="h-6 w-20" /></TableCell>
                   <TableCell><Skeleton className="h-6 w-16" /></TableCell>
@@ -162,21 +166,17 @@ export default function UsersList() {
               ))
             ) : users.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                   هیچ فەرمانبەرێک نەدۆزرایەوە.
                 </TableCell>
               </TableRow>
             ) : (
-              users.map((user) => (
+              users.map((user, index) => (
                 <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="font-medium">{user.fullName}</div>
-                    <div className="text-sm text-muted-foreground">{user.username}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{user.department?.name ?? 'N/A'}</div>
-                    <div className="text-sm text-muted-foreground">{user.jobTitle || '-'}</div>
-                  </TableCell>
+                  <TableCell className="text-muted-foreground">{index + 1}</TableCell>
+                  <TableCell className="font-medium">{user.fullName}</TableCell>
+                  <TableCell className="text-muted-foreground">{user.username}</TableCell>
+                  <TableCell>{user.department?.name ?? 'بێ هۆبە'}</TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {user.roles?.map(r => (
@@ -369,7 +369,7 @@ export default function UsersList() {
           <AlertDialogHeader>
             <AlertDialogTitle>سڕینەوەی فەرمانبەر</AlertDialogTitle>
             <AlertDialogDescription>
-              ئایا دڵنیایت لە سڕینەوەی ئەم فەرمانبەرە؟ دەستگەیەکەیان یەکسەر لەدەستدەچێت.
+              دڵنیایت لە سڕینەوەی ئەم فەرمانبەرە؟ دەستگەیەکەیان یەکسەر لەدەستدەچێت.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-row-reverse gap-2">
