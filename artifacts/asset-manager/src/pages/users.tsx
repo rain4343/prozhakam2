@@ -143,10 +143,10 @@ export default function UsersList() {
           <TableHeader>
             <TableRow>
               <TableHead>فەرمانبەر</TableHead>
-              <TableHead>بەش</TableHead>
+              <TableHead>هۆبە</TableHead>
               <TableHead>ئەرکەکان</TableHead>
               <TableHead>دۆخ</TableHead>
-              <TableHead className="text-left">کارەکان</TableHead>
+              <TableHead className="text-left">کردارەکان</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -174,7 +174,7 @@ export default function UsersList() {
                     <div className="text-sm text-muted-foreground">{user.username}</div>
                   </TableCell>
                   <TableCell>
-                    <div className="font-medium">{user.department?.name || 'دانەنراو'}</div>
+                    <div className="font-medium">{user.department?.name ?? 'N/A'}</div>
                     <div className="text-sm text-muted-foreground">{user.jobTitle || '-'}</div>
                   </TableCell>
                   <TableCell>
@@ -267,14 +267,14 @@ export default function UsersList() {
                   name="departmentId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>بەش</FormLabel>
+                      <FormLabel>هۆبە</FormLabel>
                       <Select 
                         value={field.value ? field.value.toString() : ""} 
                         onValueChange={(val) => field.onChange(parseInt(val))}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="بژاردنی بەش" />
+                            <SelectValue placeholder="بژاردنی هۆبە" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>

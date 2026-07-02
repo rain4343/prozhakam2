@@ -183,14 +183,14 @@ export default function AssetForm() {
                   name="departmentId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>بەش</FormLabel>
+                      <FormLabel>هۆبە</FormLabel>
                       <Select 
                         value={field.value ? field.value.toString() : ""} 
                         onValueChange={(val) => field.onChange(parseInt(val))}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="بژاردنی بەش" />
+                            <SelectValue placeholder="بژاردنی هۆبە" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>

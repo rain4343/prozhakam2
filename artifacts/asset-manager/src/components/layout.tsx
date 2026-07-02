@@ -13,7 +13,7 @@ import { useHealthCheck } from "@workspace/api-client-react";
 const NAV_ITEMS = [
   { href: "/", label: "داشبۆرد", icon: LayoutDashboard },
   { href: "/assets", label: "کەرەستەکان", icon: Package },
-  { href: "/departments", label: "بەشەکان", icon: Building2 },
+  { href: "/departments", label: "هۆبەکان", icon: Building2 },
   { href: "/users", label: "فەرمانبەران", icon: Users },
   { href: "/roles", label: "ئەرکەکان", icon: ShieldCheck },
 ];

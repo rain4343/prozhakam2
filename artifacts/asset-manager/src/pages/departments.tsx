@@ -48,6 +48,7 @@ export default function DepartmentsList() {
     defaultValues: { name: "", description: "" },
   });
 
+
   const openNewDialog = () => {
     setEditingDept(null);
     form.reset({ name: "", description: "" });
@@ -101,12 +102,12 @@ export default function DepartmentsList() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">بەشەکان</h1>
-          <p className="text-muted-foreground mt-1">بەڕێوەبردنی یەکەکانی ڕێکخراوە</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">هۆبەکان</h1>
+          <p className="text-muted-foreground mt-1">بەڕێوەبردنی هۆبەکانی ڕێکخراوە</p>
         </div>
         <Button onClick={openNewDialog}>
           <Plus className="w-4 h-4 ml-2" />
-          زیادکردنی بەش
+          دروستکردنی هۆبەی نوێ
         </Button>
       </div>
 
@@ -114,9 +115,9 @@ export default function DepartmentsList() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ناو</TableHead>
-              <TableHead>شرۆڤە</TableHead>
-              <TableHead className="text-left">کارەکان</TableHead>
+              <TableHead>ناوی هۆبە</TableHead>
+              <TableHead>وەسف</TableHead>
+              <TableHead className="text-left">کردارەکان</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -131,14 +132,14 @@ export default function DepartmentsList() {
             ) : departments.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
-                  هیچ بەشێک نەدۆزرایەوە.
+                  هیچ هۆبەیەک نەدۆزرایەوە.
                 </TableCell>
               </TableRow>
             ) : (
               departments.map((dept) => (
                 <TableRow key={dept.id}>
                   <TableCell className="font-medium">{dept.name}</TableCell>
-                  <TableCell className="text-muted-foreground">{dept.description || '-'}</TableCell>
+                  <TableCell className="text-muted-foreground">{dept.description ?? 'N/A'}</TableCell>
                   <TableCell className="text-left">
                     <div className="flex gap-1">
                       <Button variant="ghost" size="icon" onClick={() => openEditDialog(dept)}>
@@ -159,7 +160,7 @@ export default function DepartmentsList() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingDept ? "دەستکاریکردنی بەش" : "زیادکردنی بەش"}</DialogTitle>
+            <DialogTitle>{editingDept ? "دەستکاریکردنی هۆبە" : "دروستکردنی هۆبەی نوێ"}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -168,7 +169,7 @@ export default function DepartmentsList() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>ناو</FormLabel>
+                    <FormLabel>ناوی هۆبە</FormLabel>
                     <FormControl>
                       <Input placeholder="ب.ن. تەکنەلۆجیای زانیاری" {...field} />
                     </FormControl>
@@ -181,9 +182,9 @@ export default function DepartmentsList() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>شرۆڤە</FormLabel>
+                    <FormLabel>وەسف</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="کار و ئەرکی بەشەکە..." {...field} value={field.value || ''} />
+                      <Textarea placeholder="کار و ئەرکی هۆبەکە..." {...field} value={field.value || ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -203,9 +204,9 @@ export default function DepartmentsList() {
       <AlertDialog open={deptToDelete !== null} onOpenChange={(open) => !open && setDeptToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>سڕینەوەی بەش</AlertDialogTitle>
+            <AlertDialogTitle>سڕینەوەی هۆبە</AlertDialogTitle>
             <AlertDialogDescription>
-              ئایا دڵنیایت لە سڕینەوەی ئەم بەشە؟ ئەم کارە ناتوانرێت پاشگەزبرێتەوە.
+              دڵنیایت لە سڕینەوەی ئەم هۆبەیە؟ ئەم کارە ناتوانرێت پاشگەزبرێتەوە.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-row-reverse gap-2">

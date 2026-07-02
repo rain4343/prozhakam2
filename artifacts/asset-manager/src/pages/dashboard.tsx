@@ -60,7 +60,7 @@ export default function Dashboard() {
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">بەشەکان</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">هۆبەکان</CardTitle>
             <Building2 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -118,7 +118,7 @@ export default function Dashboard() {
             
             {deptStats && deptStats.length > 0 && (
               <div className="mt-8">
-                <h4 className="text-sm font-semibold mb-4">بەپێی بەش</h4>
+                <h4 className="text-sm font-semibold mb-4">بەپێی هۆبە</h4>
                 <div className="space-y-4">
                   {deptStats.map(ds => (
                     <div key={ds.departmentId} className="flex justify-between items-center text-sm">

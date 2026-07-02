@@ -97,10 +97,10 @@ export default function AssetsList() {
         <div className="w-full sm:w-[200px]">
           <Select value={departmentId} onValueChange={setDepartmentId}>
             <SelectTrigger>
-              <SelectValue placeholder="هەموو بەشەکان" />
+              <SelectValue placeholder="هەموو هۆبەکان" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">هەموو بەشەکان</SelectItem>
+              <SelectItem value="all">هەموو هۆبەکان</SelectItem>
               {departments.map(dept => (
                 <SelectItem key={dept.id} value={dept.id.toString()}>{dept.name}</SelectItem>
               ))}
@@ -127,11 +127,11 @@ export default function AssetsList() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>تاگ</TableHead>
+              <TableHead>#</TableHead>
               <TableHead>ناو</TableHead>
-              <TableHead>بەش</TableHead>
+              <TableHead>هۆبە</TableHead>
               <TableHead>دۆخ</TableHead>
-              <TableHead className="text-left">کارەکان</TableHead>
+              <TableHead className="text-left">کردارەکان</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -154,9 +154,9 @@ export default function AssetsList() {
             ) : (
               filteredAssets.map((asset) => (
                 <TableRow key={asset.id}>
-                  <TableCell className="font-mono text-sm">{asset.assetTag}</TableCell>
+                  <TableCell className="font-mono text-sm text-muted-foreground">{asset.assetTag}</TableCell>
                   <TableCell className="font-medium">{asset.name}</TableCell>
-                  <TableCell>{asset.department?.name || 'دانەنراو'}</TableCell>
+                  <TableCell>{asset.department?.name ?? 'N/A'}</TableCell>
                   <TableCell>
                     <div className={`inline-flex px-2 py-1 text-xs rounded-full ${
                       asset.status === 'available' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
