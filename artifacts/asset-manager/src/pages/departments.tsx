@@ -193,7 +193,9 @@ export default function DepartmentsList() {
               <DialogFooter className="flex-row-reverse gap-2">
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>پاشگەزبوونەوە</Button>
                 <Button type="submit" disabled={createDept.isPending || updateDept.isPending}>
-                  {createDept.isPending || updateDept.isPending ? "پاشەکەوتکردن..." : "پاشەکەوتکردن"}
+                  {createDept.isPending || updateDept.isPending
+                    ? "چاوەڕوانبە..."
+                    : editingDept ? "نوێکردنەوە" : "پاشەکەوتکردن"}
                 </Button>
               </DialogFooter>
             </form>
