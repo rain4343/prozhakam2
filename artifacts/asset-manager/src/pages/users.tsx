@@ -28,13 +28,22 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 
 const userSchema = z.object({
-  fullName: z.string().min(1, "ناوی تەواو پێویستە"),
+  fullName: z.string().min(1, "ناوی سیانی پێویستە"),
   username: z.string().min(1, "ناوی بەکارهێنەر پێویستە"),
   password: z.string().min(8, "وشەی نهێنی دەبێت لانیکەم ٨ پیت بێت").optional().or(z.literal("")),
-  departmentId: z.coerce.number().min(1, "بەش پێویستە"),
+  passwordConfirmation: z.string().optional().or(z.literal("")),
+  departmentId: z.coerce.number().min(1, "هۆبە پێویستە"),
   jobTitle: z.string().optional().nullable(),
   isActive: z.boolean().default(true),
   roleIds: z.array(z.number()).default([])
+}).superRefine((data, ctx) => {
+  if (data.password && data.password !== data.passwordConfirmation) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "وشەی نهێنی و دووبارەکردنەوەکەی یەکسان نین",
+      path: ["passwordConfirmation"],
+    });
+  }
 });
 
 type UserFormValues = z.infer<typeof userSchema>;
@@ -57,12 +66,12 @@ export default function UsersList() {
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userSchema),
-    defaultValues: { fullName: "", username: "", password: "", departmentId: 0, jobTitle: "", isActive: true, roleIds: [] },
+    defaultValues: { fullName: "", username: "", password: "", passwordConfirmation: "", departmentId: 0, jobTitle: "", isActive: true, roleIds: [] },
   });
 
   const openNewDialog = () => {
     setEditingUser(null);
-    form.reset({ fullName: "", username: "", password: "", departmentId: 0, jobTitle: "", isActive: true, roleIds: [] });
+    form.reset({ fullName: "", username: "", password: "", passwordConfirmation: "", departmentId: 0, jobTitle: "", isActive: true, roleIds: [] });
     setIsDialogOpen(true);
   };
 
@@ -72,6 +81,7 @@ export default function UsersList() {
       fullName: user.fullName, 
       username: user.username, 
       password: "",
+      passwordConfirmation: "",
       departmentId: user.departmentId, 
       jobTitle: user.jobTitle || "", 
       isActive: user.isActive,
@@ -81,12 +91,13 @@ export default function UsersList() {
   };
 
   const onSubmit = (data: UserFormValues) => {
-    if (editingUser && !data.password) {
-      delete data.password;
+    const { passwordConfirmation, ...submitData } = data;
+    if (editingUser && !submitData.password) {
+      delete submitData.password;
     }
     
     if (editingUser) {
-      updateUser.mutate({ id: editingUser.id, data }, {
+      updateUser.mutate({ id: editingUser.id, data: submitData }, {
         onSuccess: () => {
           toast({ title: "فەرمانبەرەکە نوێکرایەوە" });
           queryClient.invalidateQueries({ queryKey: getListUsersQueryKey({}) });
@@ -95,11 +106,11 @@ export default function UsersList() {
         onError: () => toast({ title: "شکستی هێنا لە نوێکردنەوەی فەرمانبەرەکە", variant: "destructive" })
       });
     } else {
-      if (!data.password) {
+      if (!submitData.password) {
         form.setError("password", { message: "وشەی نهێنی پێویستە بۆ فەرمانبەرانی نوێ" });
         return;
       }
-      createUser.mutate({ data: data as any }, {
+      createUser.mutate({ data: submitData as any }, {
         onSuccess: () => {
           toast({ title: "فەرمانبەرەکە زیادکرا" });
           queryClient.invalidateQueries({ queryKey: getListUsersQueryKey({}) });
@@ -214,7 +225,7 @@ export default function UsersList() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{editingUser ? "دەستکاریکردنی فەرمانبەر" : "زیادکردنی فەرمانبەر"}</DialogTitle>
+            <DialogTitle>{editingUser ? "دەستکاریکردنی فەرمانبەر" : "دروستکردنی فەرمانبەری نوێ"}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -224,7 +235,7 @@ export default function UsersList() {
                   name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>ناوی تەواو</FormLabel>
+                      <FormLabel>ناوی سیانی</FormLabel>
                       <FormControl>
                         <Input placeholder="ئەحمەد کەریم" {...field} />
                       </FormControl>
@@ -247,19 +258,34 @@ export default function UsersList() {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>وشەی نهێنی {editingUser && "(بەتاڵ بهێڵە بۆ پاراستنی وشەی نهێنی ئێستا)"}</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="********" {...field} value={field.value || ''} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>وشەی نهێنی {editingUser && <span className="text-muted-foreground font-normal">(بەتاڵ بهێڵە بۆ پاراستنی ئێستا)</span>}</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="********" {...field} value={field.value || ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="passwordConfirmation"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>دووبارەکردنەوەی وشەی نهێنی</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="********" {...field} value={field.value || ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <FormField
@@ -274,7 +300,7 @@ export default function UsersList() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="بژاردنی هۆبە" />
+                            <SelectValue placeholder="هۆبەیەک هەڵبژێرە..." />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -294,7 +320,7 @@ export default function UsersList() {
                   name="jobTitle"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>ناونیشانی کار</FormLabel>
+                      <FormLabel>ناونیشانی وەزیفی</FormLabel>
                       <FormControl>
                         <Input placeholder="ب.ن. شیکەرەوەی IT" {...field} value={field.value || ''} />
                       </FormControl>
@@ -306,7 +332,7 @@ export default function UsersList() {
 
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <FormLabel className="mb-2 block">ئەرکەکان</FormLabel>
+                  <FormLabel className="mb-2 block">ڕۆڵەکان</FormLabel>
                   <div className="space-y-2 border rounded-md p-3 max-h-32 overflow-y-auto">
                     {roles.map(role => (
                       <label key={role.id} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -356,7 +382,9 @@ export default function UsersList() {
               <DialogFooter className="flex-row-reverse gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>پاشگەزبوونەوە</Button>
                 <Button type="submit" disabled={createUser.isPending || updateUser.isPending}>
-                  {createUser.isPending || updateUser.isPending ? "پاشەکەوتکردن..." : "پاشەکەوتکردنی فەرمانبەر"}
+                  {createUser.isPending || updateUser.isPending
+                    ? "چاوەڕوانبە..."
+                    : editingUser ? "نوێکردنەوە" : "پاشەکەوتکردن"}
                 </Button>
               </DialogFooter>
             </form>

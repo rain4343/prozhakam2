@@ -72,7 +72,7 @@ export default function DepartmentsList() {
         onError: () => toast({ title: "شکستی هێنا لە نوێکردنەوەی بەشەکە", variant: "destructive" })
       });
     } else {
-      createDept.mutate({ data }, {
+      createDept.mutate({ data: { ...data, description: data.description ?? undefined } }, {
         onSuccess: () => {
           toast({ title: "بەشەکە زیادکرا" });
           queryClient.invalidateQueries({ queryKey: getListDepartmentsQueryKey() });

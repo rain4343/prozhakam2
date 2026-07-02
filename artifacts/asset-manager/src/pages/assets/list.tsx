@@ -39,12 +39,8 @@ export default function AssetsList() {
 
   const { data: departments = [] } = useListDepartments();
   const { data: assets = [], isLoading } = useListAssets({
-    query: {
-      queryKey: getListAssetsQueryKey({
-        departmentId: departmentId !== "all" ? parseInt(departmentId) : undefined,
-        status: status !== "all" ? status : undefined
-      })
-    }
+    departmentId: departmentId !== "all" ? parseInt(departmentId) : undefined,
+    status: status !== "all" ? (status as any) : undefined,
   });
 
   const deleteAsset = useDeleteAsset();
