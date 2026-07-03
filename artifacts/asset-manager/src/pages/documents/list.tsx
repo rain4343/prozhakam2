@@ -16,12 +16,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocation } from "wouter";
 
-const STATUS_LABELS: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  pending:   { label: "چاوەڕوانە",  variant: "secondary" },
-  forwarded: { label: "نێردراوە",   variant: "default" },
-  completed: { label: "تەواوبووە",  variant: "outline" },
-  archived:  { label: "ئەرشیفکراوە", variant: "outline" },
-};
+function getStatusVariant(status: string): "default" | "secondary" | "outline" {
+  if (status === "دروستکرا") return "secondary";
+  if (status.startsWith("ئاڕاستەکرا")) return "default";
+  if (status === "تەواوبووە") return "outline";
+  return "outline";
+}
 
 const docSchema = z.object({
   documentNumber: z.string().min(1, "ژمارەی نوسراو پێویستە"),
@@ -104,7 +104,6 @@ export default function DocumentsList() {
               </TableRow>
             ) : (
               documents.map((doc) => {
-                const status = STATUS_LABELS[doc.currentStatus] ?? { label: doc.currentStatus, variant: "outline" as const };
                 return (
                   <TableRow key={doc.id}>
                     <TableCell className="font-mono font-medium">{doc.documentNumber}</TableCell>
@@ -112,7 +111,7 @@ export default function DocumentsList() {
                     <TableCell className="max-w-xs truncate">{doc.subject}</TableCell>
                     <TableCell>{(doc.creator as any)?.fullName ?? "—"}</TableCell>
                     <TableCell>
-                      <Badge variant={status.variant}>{status.label}</Badge>
+                      <Badge variant={getStatusVariant(doc.currentStatus)}>{doc.currentStatus}</Badge>
                     </TableCell>
                     <TableCell className="text-left">
                       <Button variant="ghost" size="icon" onClick={() => navigate(`/documents/${doc.id}`)}>

@@ -8,6 +8,6 @@
 
 export interface DocumentForwardInput {
   userId: number;
+  departmentId: number;
   notes?: string;
-  newStatus?: string;
 }

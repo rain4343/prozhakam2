@@ -686,8 +686,8 @@ export const ForwardDocumentParams = zod.object({
 
 export const ForwardDocumentBody = zod.object({
   "userId": zod.number(),
-  "notes": zod.string().optional(),
-  "newStatus": zod.string().optional()
+  "departmentId": zod.number(),
+  "notes": zod.string().optional()
 })
 
 export const ForwardDocumentResponse = zod.object({

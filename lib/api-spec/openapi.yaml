@@ -885,11 +885,11 @@ components:
 
     DocumentForwardInput:
       type: object
-      required: [userId]
+      required: [userId, departmentId]
       properties:
         userId:
           type: integer
+        departmentId:
+          type: integer
         notes:
-          type: string
-        newStatus:
           type: string

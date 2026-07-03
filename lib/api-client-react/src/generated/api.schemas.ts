@@ -196,8 +196,8 @@ export interface DocumentInput {
 
 export interface DocumentForwardInput {
   userId: number;
+  departmentId: number;
   notes?: string;
-  newStatus?: string;
 }
 
 export type ListUsersParams = {

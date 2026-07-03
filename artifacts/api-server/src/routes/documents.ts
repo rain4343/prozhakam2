@@ -12,10 +12,11 @@ function validateDocumentInput(body: unknown): { data: { documentNumber: string;
   return { data: { documentNumber: b.documentNumber, documentDate: b.documentDate, subject: b.subject, creatorId: b.creatorId, currentStatus: typeof b.currentStatus === "string" ? b.currentStatus : "pending", filePath: typeof b.filePath === "string" ? b.filePath : null } };
 }
 
-function validateForwardInput(body: unknown): { data: { userId: number; notes?: string | null; newStatus?: string } } | { error: string } {
+function validateForwardInput(body: unknown): { data: { userId: number; departmentId: number; notes?: string | null } } | { error: string } {
   const b = body as Record<string, unknown>;
   if (!b.userId || typeof b.userId !== "number") return { error: "userId is required" };
-  return { data: { userId: b.userId, notes: typeof b.notes === "string" ? b.notes : null, newStatus: typeof b.newStatus === "string" ? b.newStatus : undefined } };
+  if (!b.departmentId || typeof b.departmentId !== "number") return { error: "departmentId is required" };
+  return { data: { userId: b.userId, departmentId: b.departmentId, notes: typeof b.notes === "string" ? b.notes : null } };
 }
 
 async function getUserWithRelations(id: number) {
@@ -71,13 +72,13 @@ router.post("/documents", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error });
     return;
   }
-  const [doc] = await db.insert(documentsTable).values(parsed.data).returning();
+  const [doc] = await db.insert(documentsTable).values({ ...parsed.data, currentStatus: "دروستکرا" }).returning();
 
   await db.insert(documentLogsTable).values({
     documentId: doc.id,
     userId: doc.creatorId,
-    action: "created",
-    notes: "نوسراوەکە دروستکرا",
+    action: "نوسراوەکە دروستکرا",
+    notes: null,
   });
 
   const result = await getDocumentWithLogs(doc.id);
@@ -105,17 +106,23 @@ router.post("/documents/:id/forward", async (req, res): Promise<void> => {
     return;
   }
 
-  const { userId, notes, newStatus } = parsed.data;
+  const { userId, departmentId, notes } = parsed.data;
+
+  const [dept] = await db.select().from(departmentsTable).where(eq(departmentsTable.id, departmentId));
+  if (!dept) { res.status(404).json({ error: "Department not found" }); return; }
+
+  const newStatus = `ئاڕاستەکرا بۆ ${dept.name}`;
+  const action = `نوسراوەکە ئاڕاستەکرا بۆ: ${dept.name}`;
 
   await db.insert(documentLogsTable).values({
     documentId: id,
     userId,
-    action: "forwarded",
+    action,
     notes: notes ?? null,
   });
 
   await db.update(documentsTable)
-    .set({ currentStatus: newStatus ?? "forwarded" })
+    .set({ currentStatus: newStatus })
     .where(eq(documentsTable.id, id));
 
   const result = await getDocumentWithLogs(id);
