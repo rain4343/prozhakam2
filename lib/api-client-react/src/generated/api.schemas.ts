@@ -142,6 +142,72 @@ export interface DepartmentAssetCount {
   count: number;
 }
 
+export interface Document {
+  id: number;
+  documentNumber: string;
+  documentDate: string;
+  subject: string;
+  creatorId: number;
+  creator?: User;
+  currentStatus: string;
+  /** @nullable */
+  filePath?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DocumentLog {
+  id: number;
+  documentId: number;
+  /** @nullable */
+  fromUserId?: number | null;
+  fromUser?: User;
+  /** @nullable */
+  toDepartmentId?: number | null;
+  toDepartment?: Department;
+  /** @nullable */
+  toUserId?: number | null;
+  toUser?: User;
+  action: string;
+  /** @nullable */
+  note?: string | null;
+  timestamp: string;
+}
+
+export interface DocumentWithLogs {
+  id: number;
+  documentNumber: string;
+  documentDate: string;
+  subject: string;
+  creatorId: number;
+  creator?: User;
+  currentStatus: string;
+  /** @nullable */
+  filePath?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  logs: DocumentLog[];
+}
+
+export interface DocumentInput {
+  /** @minLength 1 */
+  documentNumber: string;
+  documentDate: string;
+  /** @minLength 1 */
+  subject: string;
+  creatorId: number;
+  currentStatus?: string;
+  filePath?: string;
+}
+
+export interface DocumentForwardInput {
+  fromUserId: number;
+  toDepartmentId?: number;
+  toUserId?: number;
+  note?: string;
+  newStatus?: string;
+}
+
 export type ListUsersParams = {
 departmentId?: number;
 isActive?: boolean;

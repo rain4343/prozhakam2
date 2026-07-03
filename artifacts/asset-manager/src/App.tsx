@@ -12,6 +12,8 @@ import AssetForm from "@/pages/assets/form";
 import DepartmentsList from "@/pages/departments";
 import UsersList from "@/pages/users";
 import RolesList from "@/pages/roles";
+import DocumentsList from "@/pages/documents/list";
+import DocumentShow from "@/pages/documents/show";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +27,8 @@ function Router() {
       <Route path="/departments" component={DepartmentsList} />
       <Route path="/users" component={UsersList} />
       <Route path="/roles" component={RolesList} />
+      <Route path="/documents" component={DocumentsList} />
+      <Route path="/documents/:id" component={DocumentShow} />
       <Route component={NotFound} />
     </Switch>
   );

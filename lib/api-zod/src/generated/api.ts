@@ -512,6 +512,318 @@ export const GetDashboardStatsResponse = zod.object({
 
 
 /**
+ * @summary List all documents
+ */
+export const ListDocumentsResponseItem = zod.object({
+  "id": zod.number(),
+  "documentNumber": zod.string(),
+  "documentDate": zod.string(),
+  "subject": zod.string(),
+  "creatorId": zod.number(),
+  "creator": zod.object({
+  "id": zod.number(),
+  "fullName": zod.string(),
+  "username": zod.string(),
+  "departmentId": zod.number(),
+  "department": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "jobTitle": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "roles": zod.array(zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})).optional(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "currentStatus": zod.string(),
+  "filePath": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+export const ListDocumentsResponse = zod.array(ListDocumentsResponseItem)
+
+
+/**
+ * @summary Create a new document
+ */
+
+
+export const createDocumentBodyCurrentStatusDefault = `pending`;
+
+export const CreateDocumentBody = zod.object({
+  "documentNumber": zod.string().min(1),
+  "documentDate": zod.string(),
+  "subject": zod.string().min(1),
+  "creatorId": zod.number(),
+  "currentStatus": zod.string().default(createDocumentBodyCurrentStatusDefault),
+  "filePath": zod.string().optional()
+})
+
+export const CreateDocumentResponse = zod.object({
+  "id": zod.number(),
+  "documentNumber": zod.string(),
+  "documentDate": zod.string(),
+  "subject": zod.string(),
+  "creatorId": zod.number(),
+  "creator": zod.object({
+  "id": zod.number(),
+  "fullName": zod.string(),
+  "username": zod.string(),
+  "departmentId": zod.number(),
+  "department": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "jobTitle": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "roles": zod.array(zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})).optional(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "currentStatus": zod.string(),
+  "filePath": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Get document with logs
+ */
+export const GetDocumentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetDocumentResponse = zod.object({
+  "id": zod.number(),
+  "documentNumber": zod.string(),
+  "documentDate": zod.string(),
+  "subject": zod.string(),
+  "creatorId": zod.number(),
+  "creator": zod.object({
+  "id": zod.number(),
+  "fullName": zod.string(),
+  "username": zod.string(),
+  "departmentId": zod.number(),
+  "department": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "jobTitle": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "roles": zod.array(zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})).optional(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "currentStatus": zod.string(),
+  "filePath": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "logs": zod.array(zod.object({
+  "id": zod.number(),
+  "documentId": zod.number(),
+  "fromUserId": zod.number().nullish(),
+  "fromUser": zod.object({
+  "id": zod.number(),
+  "fullName": zod.string(),
+  "username": zod.string(),
+  "departmentId": zod.number(),
+  "department": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "jobTitle": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "roles": zod.array(zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})).optional(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "toDepartmentId": zod.number().nullish(),
+  "toDepartment": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "toUserId": zod.number().nullish(),
+  "toUser": zod.object({
+  "id": zod.number(),
+  "fullName": zod.string(),
+  "username": zod.string(),
+  "departmentId": zod.number(),
+  "department": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "jobTitle": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "roles": zod.array(zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})).optional(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "action": zod.string(),
+  "note": zod.string().nullish(),
+  "timestamp": zod.string()
+}))
+})
+
+
+/**
+ * @summary Forward a document
+ */
+export const ForwardDocumentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ForwardDocumentBody = zod.object({
+  "fromUserId": zod.number(),
+  "toDepartmentId": zod.number().optional(),
+  "toUserId": zod.number().optional(),
+  "note": zod.string().optional(),
+  "newStatus": zod.string().optional()
+})
+
+export const ForwardDocumentResponse = zod.object({
+  "id": zod.number(),
+  "documentNumber": zod.string(),
+  "documentDate": zod.string(),
+  "subject": zod.string(),
+  "creatorId": zod.number(),
+  "creator": zod.object({
+  "id": zod.number(),
+  "fullName": zod.string(),
+  "username": zod.string(),
+  "departmentId": zod.number(),
+  "department": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "jobTitle": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "roles": zod.array(zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})).optional(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "currentStatus": zod.string(),
+  "filePath": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "logs": zod.array(zod.object({
+  "id": zod.number(),
+  "documentId": zod.number(),
+  "fromUserId": zod.number().nullish(),
+  "fromUser": zod.object({
+  "id": zod.number(),
+  "fullName": zod.string(),
+  "username": zod.string(),
+  "departmentId": zod.number(),
+  "department": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "jobTitle": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "roles": zod.array(zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})).optional(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "toDepartmentId": zod.number().nullish(),
+  "toDepartment": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "toUserId": zod.number().nullish(),
+  "toUser": zod.object({
+  "id": zod.number(),
+  "fullName": zod.string(),
+  "username": zod.string(),
+  "departmentId": zod.number(),
+  "department": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "jobTitle": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "roles": zod.array(zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})).optional(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+}).optional(),
+  "action": zod.string(),
+  "note": zod.string().nullish(),
+  "timestamp": zod.string()
+}))
+})
+
+
+/**
  * @summary Get asset counts grouped by department
  */
 export const GetAssetsByDepartmentResponseItem = zod.object({
