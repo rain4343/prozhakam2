@@ -852,21 +852,13 @@ components:
           type: integer
         documentId:
           type: integer
-        fromUserId:
+        userId:
           type: ["integer", "null"]
-        fromUser:
-          $ref: "#/components/schemas/User"
-        toDepartmentId:
-          type: ["integer", "null"]
-        toDepartment:
-          $ref: "#/components/schemas/Department"
-        toUserId:
-          type: ["integer", "null"]
-        toUser:
+        user:
           $ref: "#/components/schemas/User"
         action:
           type: string
-        note:
+        notes:
           type: ["string", "null"]
         timestamp:
           type: string
@@ -893,15 +885,11 @@ components:
 
     DocumentForwardInput:
       type: object
-      required: [fromUserId]
+      required: [userId]
       properties:
-        fromUserId:
+        userId:
           type: integer
-        toDepartmentId:
-          type: integer
-        toUserId:
-          type: integer
-        note:
+        notes:
           type: string
         newStatus:
           type: string

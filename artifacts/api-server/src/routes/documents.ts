@@ -12,10 +12,10 @@ function validateDocumentInput(body: unknown): { data: { documentNumber: string;
   return { data: { documentNumber: b.documentNumber, documentDate: b.documentDate, subject: b.subject, creatorId: b.creatorId, currentStatus: typeof b.currentStatus === "string" ? b.currentStatus : "pending", filePath: typeof b.filePath === "string" ? b.filePath : null } };
 }
 
-function validateForwardInput(body: unknown): { data: { fromUserId: number; toDepartmentId?: number | null; toUserId?: number | null; note?: string | null; newStatus?: string } } | { error: string } {
+function validateForwardInput(body: unknown): { data: { userId: number; notes?: string | null; newStatus?: string } } | { error: string } {
   const b = body as Record<string, unknown>;
-  if (!b.fromUserId || typeof b.fromUserId !== "number") return { error: "fromUserId is required" };
-  return { data: { fromUserId: b.fromUserId, toDepartmentId: typeof b.toDepartmentId === "number" ? b.toDepartmentId : null, toUserId: typeof b.toUserId === "number" ? b.toUserId : null, note: typeof b.note === "string" ? b.note : null, newStatus: typeof b.newStatus === "string" ? b.newStatus : undefined } };
+  if (!b.userId || typeof b.userId !== "number") return { error: "userId is required" };
+  return { data: { userId: b.userId, notes: typeof b.notes === "string" ? b.notes : null, newStatus: typeof b.newStatus === "string" ? b.newStatus : undefined } };
 }
 
 async function getUserWithRelations(id: number) {
@@ -42,18 +42,14 @@ async function getDocumentWithLogs(id: number) {
     .where(eq(documentLogsTable.documentId, id))
     .orderBy(documentLogsTable.timestamp);
 
-  const logsWithRelations = await Promise.all(
+  const logsWithUser = await Promise.all(
     logs.map(async (log) => {
-      const fromUser = log.fromUserId ? await getUserWithRelations(log.fromUserId) : null;
-      const toDept = log.toDepartmentId
-        ? await db.select().from(departmentsTable).where(eq(departmentsTable.id, log.toDepartmentId)).then(r => r[0] ?? null)
-        : null;
-      const toUser = log.toUserId ? await getUserWithRelations(log.toUserId) : null;
-      return { ...log, fromUser, toDepartment: toDept, toUser };
+      const user = log.userId ? await getUserWithRelations(log.userId) : null;
+      return { ...log, user };
     })
   );
 
-  return { ...doc, creator, logs: logsWithRelations };
+  return { ...doc, creator, logs: logsWithUser };
 }
 
 const router: IRouter = Router();
@@ -79,9 +75,9 @@ router.post("/documents", async (req, res): Promise<void> => {
 
   await db.insert(documentLogsTable).values({
     documentId: doc.id,
-    fromUserId: doc.creatorId,
+    userId: doc.creatorId,
     action: "created",
-    note: "نوسراوەکە دروستکرا",
+    notes: "نوسراوەکە دروستکرا",
   });
 
   const result = await getDocumentWithLogs(doc.id);
@@ -109,22 +105,18 @@ router.post("/documents/:id/forward", async (req, res): Promise<void> => {
     return;
   }
 
-  const { fromUserId, toDepartmentId, toUserId, note, newStatus } = parsed.data;
+  const { userId, notes, newStatus } = parsed.data;
 
   await db.insert(documentLogsTable).values({
     documentId: id,
-    fromUserId,
-    toDepartmentId: toDepartmentId ?? null,
-    toUserId: toUserId ?? null,
+    userId,
     action: "forwarded",
-    note: note ?? null,
+    notes: notes ?? null,
   });
 
-  if (newStatus) {
-    await db.update(documentsTable).set({ currentStatus: newStatus }).where(eq(documentsTable.id, id));
-  } else {
-    await db.update(documentsTable).set({ currentStatus: "forwarded" }).where(eq(documentsTable.id, id));
-  }
+  await db.update(documentsTable)
+    .set({ currentStatus: newStatus ?? "forwarded" })
+    .where(eq(documentsTable.id, id));
 
   const result = await getDocumentWithLogs(id);
   res.json(toJSON(result));

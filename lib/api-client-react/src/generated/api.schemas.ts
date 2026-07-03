@@ -160,17 +160,11 @@ export interface DocumentLog {
   id: number;
   documentId: number;
   /** @nullable */
-  fromUserId?: number | null;
-  fromUser?: User;
-  /** @nullable */
-  toDepartmentId?: number | null;
-  toDepartment?: Department;
-  /** @nullable */
-  toUserId?: number | null;
-  toUser?: User;
+  userId?: number | null;
+  user?: User;
   action: string;
   /** @nullable */
-  note?: string | null;
+  notes?: string | null;
   timestamp: string;
 }
 
@@ -201,10 +195,8 @@ export interface DocumentInput {
 }
 
 export interface DocumentForwardInput {
-  fromUserId: number;
-  toDepartmentId?: number;
-  toUserId?: number;
-  note?: string;
+  userId: number;
+  notes?: string;
   newStatus?: string;
 }
 

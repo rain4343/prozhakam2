@@ -646,40 +646,8 @@ export const GetDocumentResponse = zod.object({
   "logs": zod.array(zod.object({
   "id": zod.number(),
   "documentId": zod.number(),
-  "fromUserId": zod.number().nullish(),
-  "fromUser": zod.object({
-  "id": zod.number(),
-  "fullName": zod.string(),
-  "username": zod.string(),
-  "departmentId": zod.number(),
-  "department": zod.object({
-  "id": zod.number(),
-  "name": zod.string(),
-  "description": zod.string().nullish(),
-  "createdAt": zod.string(),
-  "updatedAt": zod.string()
-}).optional(),
-  "jobTitle": zod.string().nullish(),
-  "isActive": zod.boolean(),
-  "roles": zod.array(zod.object({
-  "id": zod.number(),
-  "name": zod.string(),
-  "createdAt": zod.string(),
-  "updatedAt": zod.string()
-})).optional(),
-  "createdAt": zod.string(),
-  "updatedAt": zod.string()
-}).optional(),
-  "toDepartmentId": zod.number().nullish(),
-  "toDepartment": zod.object({
-  "id": zod.number(),
-  "name": zod.string(),
-  "description": zod.string().nullish(),
-  "createdAt": zod.string(),
-  "updatedAt": zod.string()
-}).optional(),
-  "toUserId": zod.number().nullish(),
-  "toUser": zod.object({
+  "userId": zod.number().nullish(),
+  "user": zod.object({
   "id": zod.number(),
   "fullName": zod.string(),
   "username": zod.string(),
@@ -703,7 +671,7 @@ export const GetDocumentResponse = zod.object({
   "updatedAt": zod.string()
 }).optional(),
   "action": zod.string(),
-  "note": zod.string().nullish(),
+  "notes": zod.string().nullish(),
   "timestamp": zod.string()
 }))
 })
@@ -717,10 +685,8 @@ export const ForwardDocumentParams = zod.object({
 })
 
 export const ForwardDocumentBody = zod.object({
-  "fromUserId": zod.number(),
-  "toDepartmentId": zod.number().optional(),
-  "toUserId": zod.number().optional(),
-  "note": zod.string().optional(),
+  "userId": zod.number(),
+  "notes": zod.string().optional(),
   "newStatus": zod.string().optional()
 })
 
@@ -760,40 +726,8 @@ export const ForwardDocumentResponse = zod.object({
   "logs": zod.array(zod.object({
   "id": zod.number(),
   "documentId": zod.number(),
-  "fromUserId": zod.number().nullish(),
-  "fromUser": zod.object({
-  "id": zod.number(),
-  "fullName": zod.string(),
-  "username": zod.string(),
-  "departmentId": zod.number(),
-  "department": zod.object({
-  "id": zod.number(),
-  "name": zod.string(),
-  "description": zod.string().nullish(),
-  "createdAt": zod.string(),
-  "updatedAt": zod.string()
-}).optional(),
-  "jobTitle": zod.string().nullish(),
-  "isActive": zod.boolean(),
-  "roles": zod.array(zod.object({
-  "id": zod.number(),
-  "name": zod.string(),
-  "createdAt": zod.string(),
-  "updatedAt": zod.string()
-})).optional(),
-  "createdAt": zod.string(),
-  "updatedAt": zod.string()
-}).optional(),
-  "toDepartmentId": zod.number().nullish(),
-  "toDepartment": zod.object({
-  "id": zod.number(),
-  "name": zod.string(),
-  "description": zod.string().nullish(),
-  "createdAt": zod.string(),
-  "updatedAt": zod.string()
-}).optional(),
-  "toUserId": zod.number().nullish(),
-  "toUser": zod.object({
+  "userId": zod.number().nullish(),
+  "user": zod.object({
   "id": zod.number(),
   "fullName": zod.string(),
   "username": zod.string(),
@@ -817,7 +751,7 @@ export const ForwardDocumentResponse = zod.object({
   "updatedAt": zod.string()
 }).optional(),
   "action": zod.string(),
-  "note": zod.string().nullish(),
+  "notes": zod.string().nullish(),
   "timestamp": zod.string()
 }))
 })

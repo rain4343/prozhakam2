@@ -5,23 +5,16 @@
  * Asset Manager API
  * OpenAPI spec version: 0.1.0
  */
-import type { Department } from './department';
 import type { User } from './user';
 
 export interface DocumentLog {
   id: number;
   documentId: number;
   /** @nullable */
-  fromUserId?: number | null;
-  fromUser?: User;
-  /** @nullable */
-  toDepartmentId?: number | null;
-  toDepartment?: Department;
-  /** @nullable */
-  toUserId?: number | null;
-  toUser?: User;
+  userId?: number | null;
+  user?: User;
   action: string;
   /** @nullable */
-  note?: string | null;
+  notes?: string | null;
   timestamp: string;
 }

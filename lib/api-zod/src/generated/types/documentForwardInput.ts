@@ -7,9 +7,7 @@
  */
 
 export interface DocumentForwardInput {
-  fromUserId: number;
-  toDepartmentId?: number;
-  toUserId?: number;
-  note?: string;
+  userId: number;
+  notes?: string;
   newStatus?: string;
 }
